@@ -1,0 +1,188 @@
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+from skimage.draw import polygon
+import PIL
+import json
+import base64
+import os.path
+from os.path import splitext
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import re
+os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
+#https://divamgupta.com/image-segmentation/2019/06/06/deep-learning-semantic-segmentation-keras.html
+from keras_segmentation.models.segnet import segnet
+from keras_segmentation.models.unet import unet
+from keras.models import model_from_json
+from keras.models import load_model, save_model
+
+colors = {0 : (0,0,0), 
+          1 : (0,0,255), 
+          2 : (0,255,0),
+          3 : (255,0,0), 
+          4 : (0,255,255),         
+         }
+
+dim = (256, 256) 
+
+path =  r'D:\dev\dcps\AutonomesFahren\data'
+dirimages = "images_augmented"
+dirmasks = "masks_augmented"
+dirmodels = "models"
+
+dirimagesvalid = "images_valid"
+dirmasksvalid = "masks_valid"
+
+dirimagestest = "images_test"
+dirmaskstest = "masks_test"
+
+dirpredictions = "predictions"
+
+fullpathimages = os.path.join(path, dirimages)
+fullpathmasks = os.path.join(path, dirmasks)
+fullpathpredictions = os.path.join(path, dirpredictions)
+
+fullpathimagesvalid = os.path.join(path, dirimagesvalid)
+fullpathmasksvalid = os.path.join(path, dirmasksvalid)
+
+fullpathimagestest = os.path.join(path, dirimagestest)
+fullpathmaskstest = os.path.join(path, dirmaskstest)
+
+print(os.path.exists(fullpathimagesvalid))
+print(os.path.exists(fullpathmasks))
+print(os.path.exists(fullpathpredictions))
+print(os.path.exists(os.path.join(path, dirmodels)))
+#model.load_weights(os.path.join(path, dirmodels,modelweightname))
+
+imagetestlist = []
+
+imagetestnames = os.listdir(fullpathimagestest)
+imagetestnames.sort()
+
+for imagename in imagetestnames:
+    if imagename.endswith(".png"):
+        imagetestlist.append(cv2.imread(os.path.join(fullpathimagestest,imagename),cv2.IMREAD_COLOR ))
+        
+from keras.models import Model, load_model
+from keras.layers import Input, BatchNormalization, Activation, Dense, Dropout, Flatten, ZeroPadding2D, UpSampling2D
+from keras.layers.core import Lambda, RepeatVector, Reshape
+from keras.layers.convolutional import Conv2D, Conv2DTranspose
+from keras.layers.pooling import MaxPooling2D, GlobalMaxPool2D
+from keras.layers.merge import concatenate, add
+from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from keras.optimizers import Adam
+from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
+
+def my_unet(classes):
+    
+    dropout = 0.4
+    input_img = Input(shape=(dim[0], dim[1], 3))
+    
+    #contracting
+    x = (ZeroPadding2D((1, 1)))(input_img)
+    x = (Conv2D(64, (3, 3), padding='valid'))(x)
+    x = (BatchNormalization())(x)
+    x = (Activation('relu'))(x)
+    x = (MaxPooling2D((2, 2)))(x)
+    c0 = Dropout(dropout)(x)
+    
+    x = (ZeroPadding2D((1, 1)))(c0)
+    x = (Conv2D(128, (3, 3),padding='valid'))(x)
+    x = (BatchNormalization())(x)
+    x = (Activation('relu'))(x)
+    x = (MaxPooling2D((2, 2)))(x)
+    c1 = Dropout(dropout)(x)
+
+    x = (ZeroPadding2D((1, 1)))(c1)
+    x = (Conv2D(256, (3, 3), padding='valid'))(x)
+    x = (BatchNormalization())(x)
+    x = (Activation('relu'))(x)
+    x = (MaxPooling2D((2, 2)))(x)
+    c2 = Dropout(dropout)(x)
+    
+    x = (ZeroPadding2D((1, 1)))(c2)
+    x = (Conv2D(256, (3, 3), padding='valid'))(x)
+    x = (BatchNormalization())(x)
+    x = (Activation('relu'))(x)
+    x = (MaxPooling2D((2, 2)))(x)
+    c3 = Dropout(dropout)(x)
+    
+    x = (ZeroPadding2D((1, 1)))(c3)
+    x = (Conv2D(512, (3, 3), padding='valid'))(x)
+    c4 = (BatchNormalization())(x)
+
+    x = (UpSampling2D((2, 2)))(c4)
+    x = (concatenate([x, c2], axis=-1))
+    x = Dropout(dropout)(x)
+    x = (ZeroPadding2D((1, 1)))(x)
+    x = (Conv2D(256, (3, 3), padding='valid', activation='relu'))(x)
+    e4 = (BatchNormalization())(x)
+    
+    x = (UpSampling2D((2, 2)))(e4)
+    x = (concatenate([x, c1], axis=-1))
+    x = Dropout(dropout)(x)
+    x = (ZeroPadding2D((1, 1)))(x)
+    x = (Conv2D(256, (3, 3), padding='valid', activation='relu'))(x)
+    e3 = (BatchNormalization())(x)
+    
+    x = (UpSampling2D((2, 2)))(e3)
+    x = (concatenate([x, c0], axis=-1))
+    x = Dropout(dropout)(x)
+    x = (ZeroPadding2D((1, 1)))(x)
+    x = (Conv2D(64, (3, 3), padding='valid', activation='relu'))(x)
+    x = (BatchNormalization())(x)
+
+    x = (UpSampling2D((2, 2)))(x)
+    x = Conv2D(classes, (3, 3), padding='same')(x)
+    
+    x = (Activation('softmax'))(x)
+    
+    model = Model(input_img, x)
+        
+    return model
+
+model = my_unet(len(colors))
+model.compile(loss="categorical_crossentropy",optimizer="adadelta", metrics=['accuracy'])
+
+modelweightname = "roadunet256-my-dropout-huge.h5"
+
+model.load_weights(os.path.join(path, dirmodels,modelweightname))
+
+j = 1
+out = model.predict_segmentation(
+    inp=imagetestlist[j],
+)
+
+def makemask(mask):
+    ret_mask = np.zeros((mask.shape[0], mask.shape[1], 3), 'uint8')
+    for i in range(mask.shape[0]):
+        for j in range(mask.shape[1]):
+                assert(mask[i,j] < len(colors))
+                ret_mask[i,j,0] = colors[mask[i,j]][0]
+                ret_mask[i,j,1] = colors[mask[i,j]][1]
+                ret_mask[i,j,2] = colors[mask[i,j]][2]
+    return ret_mask
+
+def makemaskcolor(mask, color):
+    ret_mask = np.zeros((mask.shape[0], mask.shape[1], 3), 'uint8')
+    for i in range(mask.shape[0]):
+        for j in range(mask.shape[1]):
+                if mask[i,j] == color:
+                    ret_mask[i,j,0] = colors[color][0]
+                    ret_mask[i,j,1] = colors[color][1]
+                    ret_mask[i,j,2] = colors[color][2]
+    return ret_mask
+
+mymasks = predictedmask(predictions_test)
+
+img = makemask(out)
+
+assert(img.shape[0] == img.shape[1])
+
+mask = np.zeros((dim[0], dim[1], 3), 'uint8')
+
+mask = cv2.resize(img, dim, interpolation = cv2.INTER_AREA) 
+
+cv2.imshow("maske",mask)
+

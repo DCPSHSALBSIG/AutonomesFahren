@@ -31,7 +31,7 @@ colors = {0 : (0,0,0),
 
 dim = (512, 512) 
 
-path =  r'/home/moamen/myGitRepos/AutonomesFahren/data'
+path =  r'D:\dev\dcps\AutonomesFahren\data'
 dirjson = "jsons"
 dirimages = "images"
 dirmasks = "masks"
@@ -318,11 +318,9 @@ def createMasksAugmented(ident, sourcejsonsdir, destimagesdir, destmasksdir):
     f.close()
 
 createMasks(fullpathjson, fullpathimages, fullpathmasks)
-#createMasksAugmented("a1",fullpathjson, fullpathimages, fullpathmasks)
+#createMasksAugmented(fullpathjson, fullpathimages, fullpathmasks)
 #createMasksAugmented("a2",fullpathjson, fullpathimages, fullpathmasks)
 #createMasksAugmented("a3",fullpathjson, fullpathimages, fullpathmasks)
-
-# start 08.29 voraussichlich ende: 12.29 haelfte
 
 createMasks(fullpathjsonsvalid, fullpathimagesvalid, fullpathmasksvalid)
 #createMasksAugmented("a4", fullpathjsonsvalid, fullpathimagesvalid, fullpathmasksvalid)

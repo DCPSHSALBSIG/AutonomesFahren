@@ -21,11 +21,35 @@ colors = {0 : (0,0,0),
 
 dim = (256, 256) 
 
-path = "/home/moamen/myGitRepos/AutonomesFahren/data/comparison"
-fullpathimages = "/home/moamen/myGitRepos/AutonomesFahren/data/images_augmented"
-fullpathmasks ="/home/moamen/myGitRepos/AutonomesFahren/data/masks_augmented"
+path =  r'D:\dev\dcps\AutonomesFahren\data'
+dirjson = "jsons"
+dirimages = "images"
+dirmasks = "masks"
+dirimagesaugmented = "images_augmented"
+dirmasksaugmented = "masks_augmented"
 
+dirjsonsvalid = "jsons_valid"
+dirimagesvalid = "images_valid"
+dirmasksvalid = "masks_valid"
 
+dirjsonstest = "jsons_test"
+dirimagestest = "images_test"
+dirmaskstest = "masks_test"
+
+fullpathjson = os.path.join(path, dirjson)
+fullpathimages = os.path.join(path, dirimages)
+fullpathmasks = os.path.join(path, dirmasks)
+
+fullpathimagesaugmented = os.path.join(path, dirimagesaugmented)
+fullpathmasksaugmented = os.path.join(path, dirmasksaugmented)
+
+fullpathjsonsvalid = os.path.join(path, dirjsonsvalid)
+fullpathimagesvalid = os.path.join(path, dirimagesvalid)
+fullpathmasksvalid = os.path.join(path, dirmasksvalid)
+
+fullpathjsonstest = os.path.join(path, dirjsonstest)
+fullpathimagestest = os.path.join(path, dirimagestest)
+fullpathmaskstest = os.path.join(path, dirmaskstest)
 
 def makemask(mask):
     ret_mask = np.zeros((mask.shape[0], mask.shape[1], 3), 'uint8')
@@ -75,7 +99,9 @@ def checkimages(fullpathimages, fullpathmasks):
             continue           
 
         cv2.addWeighted(origimg, 0.5, makemask(maskimg), 0.5, 0, weighted)
-        cv2.imwrite(os.path.join(path, imagenames[j]),weighted)
+        cv2.imwrite(os.path.join(path,"comparison", imagenames[j]),weighted)
     
 
-checkimages(fullpathimages, fullpathmasks)
+#checkimages(fullpathimagesaugmented, fullpathmasksaugmented)
+checkimages(fullpathimagesvalid, fullpathmasksvalid)
+#checkimages(fullpathimagestest, fullpathmaskstest)

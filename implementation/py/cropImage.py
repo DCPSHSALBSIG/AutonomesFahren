@@ -48,7 +48,7 @@ class myclass:
         # feste groesse : (256, 256)
         c_h = self.image.shape[0]//2
         c_v = self.image.shape[1]//2
-        self.p1 = np.array([c_h - 127, c_v - 127 ]) ; self.p2 = np.array([c_h + 128, c_v + 128 ])
+        self.p1 = np.array([c_h - 230, c_v - 230 ]) ; self.p2 = np.array([c_h + 230, c_v + 230 ])
         self.index= 0 
         self.dim = (256, 256)
         self.setbrightness=False
@@ -147,7 +147,7 @@ class myclass:
         cropedImageFullName = os.path.join(self.images_augemented, "croped_" + str(self.imageIndex) + self.imageName)
         cropedMaskFullName = os.path.join(self.masks_augemented, "croped_" + str(self.imageIndex) + self.maskName)
         self.imageIndex += 1 
-        cropedimage = cv2.resize(cropedimage, self.dim, cv2.INTER_NEAREST) 
+        cropedimage = cv2.resize(cropedimage, self.dim, cv2.INTER_NEAREST)
         cv2.imwrite(cropedImageFullName,cropedimage)
         print(cropedImageFullName + " was saved")
         cropedmask = cv2.resize(cropedmask, self.dim, cv2.INTER_NEAREST) 
@@ -161,19 +161,19 @@ class myclass:
         #  center : 
         self.crop()
         # up 
-        self.up(50)
-        self.crop()
-        self.down(50)
+        #self.up(10)
+        #self.crop()
+        #self.down(10)
         #down
-        self.down(50)
+        self.down(10)
         self.crop()
-        self.up(50)
+        self.up(10)
         # left 
-        self.left(50)
+        self.left(10)
         self.crop()
-        self.right(50)
+        self.right(10)
         # right 
-        self.right(50)
+        self.right(10)
         self.crop()
         self.left()
 
@@ -181,63 +181,63 @@ class myclass:
         # flip 
         self.crop()
         # up 
-        self.up(50)
-        self.crop()
-        self.down(50)
+        #self.up(10)
+        #self.crop()
+        #self.down(10)
         #down
-        self.down(50)
+        self.down(10)
         self.crop()
-        self.up(50)
+        self.up(10)
         # left 
-        self.left(50)
+        self.left(10)
         self.crop()
-        self.right(50)
+        self.right(10)
         # right 
-        self.right(50)
+        self.right(10)
         self.crop()
         self.left()
 
          # rotatation left  : 10 
-        self.rotate_l(5)
+        self.rotate_l(3)
         self.crop()
         # up 
-        self.up(50)
-        self.crop()
-        self.down(50)
+        #self.up(10)
+        #self.crop()
+        #self.down(10)
         #down
-        self.down(50)
+        self.down(10)
         self.crop()
-        self.up(50)
+        self.up(10)
         # left 
-        self.left(50)
+        self.left(10)
         self.crop()
-        self.right(50)
+        self.right(10)
         # right 
-        self.right(50)
+        self.right(10)
         self.crop()
         self.left()
-        self.rotate_r(5)
+        self.rotate_r(3)
 
         # rotatation right  : 10 
-        self.rotate_r(5)
+        self.rotate_r(3)
         self.crop()
         # up 
-        self.up(50)
-        self.crop()
-        self.down(50)
+        #self.up(10)
+        #self.crop()
+        #self.down(10)
         #down
-        self.down(50)
+        self.down(10)
         self.crop()
-        self.up(50)
+        self.up(10)
         # left 
-        self.left(50)
+        self.left(10)
         self.crop()
-        self.right(50)
+        self.right(10)
         # right 
-        self.right(50)
+        self.right(10)
         self.crop()
         self.left()
-        self.rotate_l(5)
+        self.rotate_l(3)
 
 
 
@@ -247,22 +247,22 @@ class myclass:
         self.brightness()
         self.crop()
         # up 
-        self.up(50)
-        self.brightness()
-        self.crop()
-        self.down(50)
+        #self.up(10)
+        #self.brightness()
+        #self.crop()
+        #self.down(10)
         #down
-        self.down(50)
+        self.down(10)
         self.brightness()
         self.crop()
-        self.up(50)
+        self.up(10)
         # left 
-        self.left(50)
+        self.left(10)
         self.brightness()
         self.crop()
-        self.right(50)
+        self.right(10)
         # right 
-        self.right(50)
+        self.right(10)
         self.brightness()
         self.crop()
         self.left()
@@ -271,22 +271,22 @@ class myclass:
         self.rotate_l(10)
         self.crop()
         # up 
-        self.up(50)
-        self.brightness()
-        self.crop()
-        self.down(50)
+        #self.up(10)
+        #self.brightness()
+        #self.crop()
+        #self.down(10)
         #down
-        self.down(50)
+        self.down(10)
         self.brightness()
         self.crop()
-        self.up(50)
+        self.up(10)
         # left 
-        self.left(50)
+        self.left(10)
         self.brightness()
         self.crop()
-        self.right(50)
+        self.right(10)
         # right 
-        self.right(50)
+        self.right(10)
         self.brightness()
         self.crop()
         self.left()
@@ -296,22 +296,22 @@ class myclass:
         self.rotate_r(10)
         self.crop()
         # up 
-        self.up(50)
-        self.brightness()
-        self.crop()
-        self.down(50)
+        #self.up(10)
+        #self.brightness()
+        #self.crop()
+        #self.down(10)
         #down
-        self.down(50)
+        self.down(10)
         self.brightness()
         self.crop()
-        self.up(50)
+        self.up(10)
         # left 
-        self.left(50)
+        self.left(10)
         self.brightness()
         self.crop()
-        self.right(50)
+        self.right(10)
         # right 
-        self.right(50)
+        self.right(10)
         self.brightness()
         self.crop()
         self.left()
@@ -355,10 +355,10 @@ class myclass:
 # main Programm
 def main():
     print("program has started ...")
-    imagesDir = "/home/moamen/myGitRepos/AutonomesFahren/data/images"
-    masksDir = "/home/moamen/myGitRepos/AutonomesFahren/data/masks"
-    images_augemented = "/home/moamen/myGitRepos/AutonomesFahren/data/images_augmented"
-    masks_augemented  = "/home/moamen/myGitRepos/AutonomesFahren/data/masks_augmented"
+    imagesDir = "D:\dev\dcps\AutonomesFahren\data\images"
+    masksDir = "D:\dev\dcps\AutonomesFahren\data\masks"
+    images_augemented = "D:\dev\dcps\AutonomesFahren\data\images_augmented"
+    masks_augemented  = "D:\dev\dcps\AutonomesFahren\data\masks_augmented"
     images = os.listdir(imagesDir)
     masks = os.listdir(masksDir)
 
